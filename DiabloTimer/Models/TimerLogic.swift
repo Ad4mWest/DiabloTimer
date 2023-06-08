@@ -7,18 +7,18 @@ import UIKit
  protocol TimerLogicProtocolDelegate: AnyObject {
     var timer: Timer { get set }
     var seconds: Int { get set }
-     var progressSeconds: Float { get set }
+    var progressSeconds: Float { get set }
     func createTimer()
 }
 
-class TimerLogic {
+final class TimerLogic {
 
 //MARK: - Variables
     
     var timer = Timer()
     var seconds = 60
     var progressSeconds: Float = 1 / 60
-    var totalAmountFromStart = 0
+    private var totalAmountFromStart = 0
     
     weak var delegate: ViewControllerProtocol?
     var userDefaultsValues: UserDefaultsValues?
@@ -67,7 +67,7 @@ class TimerLogic {
 
 //MARK: - Logic for adding time segments
 
-    func addingTimeSegments() {
+    private func addingTimeSegments() {
         totalAmountFromStart += 1
         userDefaultsValues?.totalTimeSegments += 1
         guard let amount = userDefaultsValues?.totalTimeSegments else { return }

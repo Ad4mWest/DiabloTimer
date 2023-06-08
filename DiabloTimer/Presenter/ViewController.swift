@@ -5,13 +5,9 @@
 import UIKit
 
 protocol ViewControllerProtocol: AnyObject {
-    var startButton: UIButton { get set }
-    var pauseButton: UIButton { get set }
-    var resetButton: UIButton { get set }
     var progressView: UIProgressView { get set }
     var datePicker: UIDatePicker { get set }
     var dateLabel: UILabel { get set }
-    var imageView: UIImageView { get set }
     var totalAmount: UILabel { get set }
     func enableButtons(start: Bool, pause: Bool, reset: Bool)
 }
@@ -20,13 +16,14 @@ final class ViewController: UIViewController {
     
 //MARK: - Variables
     
-    var startButton = UIButton()
-    var pauseButton = UIButton()
-    var resetButton = UIButton()
+    private var startButton = UIButton()
+    private var pauseButton = UIButton()
+    private var resetButton = UIButton()
+    private var imageView = UIImageView()
+    
     var progressView = UIProgressView()
     var datePicker = UIDatePicker()
     var dateLabel = UILabel()
-    var imageView = UIImageView()
     var totalAmount = UILabel()
     
     var timerLogic: TimerLogicProtocolDelegate?
@@ -55,7 +52,7 @@ final class ViewController: UIViewController {
     
 //MARK: - ImageView
     
-    func createIMageView(_ imageView: UIImageView) {
+    private func createIMageView(_ imageView: UIImageView) {
         imageView.image = UIImage(named: "Diablo4 1.jpg")
         imageView.contentMode = .scaleAspectFill
         imageView.frame = self.view.frame.standardized
@@ -65,7 +62,7 @@ final class ViewController: UIViewController {
     
 //MARK: - Labels
     
-    func createTotalAmountLabel(_ totalAmount: UILabel) {
+    private func createTotalAmountLabel(_ totalAmount: UILabel) {
         totalAmount.text = "Hell"
         totalAmount.font = UIFont.systemFont(ofSize: 40)
         totalAmount.textColor = .red
@@ -81,7 +78,7 @@ final class ViewController: UIViewController {
         view.addSubview(totalAmount)
     }
     
-    func createDateLabel(_ dateLabel: UILabel) {
+    private func createDateLabel(_ dateLabel: UILabel) {
         dateLabel.text = "Diablo IV"
         dateLabel.font = UIFont.systemFont(ofSize: 80)
         dateLabel.textColor = .red
@@ -98,7 +95,7 @@ final class ViewController: UIViewController {
     
 //MARK: - DatePicker
     
-    func createDatePicker(_ datePicker: UIDatePicker) {
+    private func createDatePicker(_ datePicker: UIDatePicker) {
         datePicker.datePickerMode = .countDownTimer
         datePicker.preferredDatePickerStyle = .wheels
         datePicker.setValue(UIColor.red, forKey: "textColor")
@@ -111,7 +108,7 @@ final class ViewController: UIViewController {
         
 //MARK: - ProgressBar
     
-    func createProgressBar(_ progressView: UIProgressView) {
+    private func createProgressBar(_ progressView: UIProgressView) {
         progressView.progressViewStyle = .bar
         progressView.progress = 1
         progressView.progressTintColor = .red
@@ -123,7 +120,7 @@ final class ViewController: UIViewController {
     
 //MARK: - Buttons
     
-    func createStartButton(_ button: UIButton) {
+    private func createStartButton(_ button: UIButton) {
         button.setTitle("Start", for: .normal)
         button.setTitleColor(.red, for: .normal)
         button.alpha = 1
@@ -135,7 +132,7 @@ final class ViewController: UIViewController {
         button.addTarget(self, action: #selector(startTimer), for: .touchUpInside)
     }
     
-    func createPauseButton(_ button: UIButton) {
+    private func createPauseButton(_ button: UIButton) {
         button.setTitle("Pause", for: .normal)
         button.setTitleColor(.red, for: .normal)
         button.alpha = 1
@@ -147,7 +144,7 @@ final class ViewController: UIViewController {
         button.addTarget(self, action: #selector(pauseTimer), for: .touchUpInside)
     }
     
-    func createResetButton(_ button: UIButton) {
+    private func createResetButton(_ button: UIButton) {
         button.setTitle("Reset", for: .normal)
         button.setTitleColor(.red, for: .normal)
         button.alpha = 1

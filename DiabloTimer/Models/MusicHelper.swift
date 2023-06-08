@@ -5,7 +5,7 @@
 import Foundation
 import AVFoundation
 
-class MusicHelper {
+final class MusicHelper {
   
     static let sharedHelper = MusicHelper()
     var audioPlayer: AVAudioPlayer?
