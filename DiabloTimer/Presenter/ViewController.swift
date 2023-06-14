@@ -8,7 +8,13 @@ protocol ViewControllerProtocol: AnyObject {
     var progressView: UIProgressView { get set }
     var datePicker: UIDatePicker { get set }
     var dateLabel: UILabel { get set }
-    var totalAmount: UILabel { get set }
+    var totalAmountLabel: UILabel { get set }
+    var plusAmountButton: UIButton { get set }
+    var minusAmountButton: UIButton { get set }
+    var plusTotalButton: UIButton { get set }
+    var minusTotalButton: UIButton { get set }
+    var leftFireImageView: UIImageView { get set }
+    var rightFireImageView: UIImageView { get set }
     func enableButtons(start: Bool, pause: Bool, reset: Bool)
 }
 
@@ -16,53 +22,94 @@ final class ViewController: UIViewController {
     
 //MARK: - Variables
     
-    private var startButton = UIButton()
-    private var pauseButton = UIButton()
-    private var resetButton = UIButton()
-    private var imageView = UIImageView()
+    //MARK: - ImageView
     
-    var progressView = UIProgressView()
-    var datePicker = UIDatePicker()
-    var dateLabel = UILabel()
-    var totalAmount = UILabel()
-    
-    var timerLogic: TimerLogicProtocolDelegate?
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-            .darkContent
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        timerLogic = TimerLogic(delegate: self)
-                
-        createIMageView(imageView)
-        createTotalAmountLabel(totalAmount)
-        createDateLabel(dateLabel)
-        createDatePicker(datePicker)
-        createProgressBar(progressView)
-        
-        createStartButton(startButton)
-        createPauseButton(pauseButton)
-        createResetButton(resetButton)
-        
-        enableButtons(start: true, pause: false, reset: false)
-    }
-    
-//MARK: - ImageView
-    
-    private func createIMageView(_ imageView: UIImageView) {
+    private var imageView: UIImageView = {
+        let imageView = UIImageView()
         imageView.image = UIImage(named: "Diablo4 1.jpg")
-        imageView.contentMode = .scaleAspectFill
-        imageView.frame = self.view.frame.standardized
+        return imageView
+    }()
+    
+    //MARK: - Buttons for timer
+    
+    private lazy var startButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Start", for: .normal)
+        button.setTitleColor(.red, for: .normal)
+        button.alpha = 1
+                
+        button.addTarget(self, action: #selector(startTimer), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private lazy var pauseButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Pause", for: .normal)
+        button.setTitleColor(.red, for: .normal)
+        button.alpha = 1
+                
+        button.addTarget(self, action: #selector(pauseTimer), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private lazy var resetButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Reset", for: .normal)
+        button.setTitleColor(.red, for: .normal)
+        button.alpha = 1
+                
+        button.addTarget(self, action: #selector(resetTimer), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    //MARK: - ProgressBar
+
+    lazy var progressView: UIProgressView = {
+        let progressView = UIProgressView()
+        progressView.progressViewStyle = .bar
+        progressView.progress = 1
+        progressView.progressTintColor = .red
+        progressView.trackTintColor = nil
         
-        view.addSubview(imageView)
-    }
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        return progressView
+    }()
     
-//MARK: - Labels
+    //MARK: - DatePicker
     
-    private func createTotalAmountLabel(_ totalAmount: UILabel) {
+    lazy var datePicker: UIDatePicker = {
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .countDownTimer
+        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.setValue(UIColor.red, forKey: "textColor")
+        datePicker.sizeToFit()
+        
+        datePicker.addTarget(self, action: #selector(datePickerChange(datePicker:)), for: .valueChanged)
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        return datePicker
+    }()
+    
+    //MARK: - Labels
+    
+    lazy var dateLabel: UILabel = {
+        let dateLabel = UILabel()
+        dateLabel.text = "Diablo IV"
+        dateLabel.font = UIFont.systemFont(ofSize: 70)
+        dateLabel.textColor = .red
+        dateLabel.textAlignment = .center
+        dateLabel.shadowColor = .systemRed
+        dateLabel.shadowOffset = CGSize(width: 2, height: 2)
+        dateLabel.numberOfLines = 1
+        dateLabel.adjustsFontSizeToFitWidth = true
+        dateLabel.translatesAutoresizingMaskIntoConstraints = false
+        return dateLabel
+    }()
+    
+    lazy var totalAmountLabel: UILabel = {
+        let totalAmount = UILabel()
         totalAmount.text = "Hell"
         totalAmount.font = UIFont.systemFont(ofSize: 40)
         totalAmount.textColor = .red
@@ -70,111 +117,280 @@ final class ViewController: UIViewController {
         totalAmount.shadowColor = .systemRed
         totalAmount.shadowOffset = CGSize(width: 2, height: 2)
         totalAmount.numberOfLines = 1
-        
         totalAmount.adjustsFontSizeToFitWidth = true
         totalAmount.sizeToFit()
-        totalAmount.frame = CGRect(x: 70, y: 150, width: 270, height: 150)
-        
-        view.addSubview(totalAmount)
-    }
+        totalAmount.translatesAutoresizingMaskIntoConstraints = false
+        return totalAmount
+    }()
     
-    private func createDateLabel(_ dateLabel: UILabel) {
-        dateLabel.text = "Diablo IV"
-        dateLabel.font = UIFont.systemFont(ofSize: 80)
-        dateLabel.textColor = .red
-        dateLabel.textAlignment = .center
-        dateLabel.shadowColor = .systemRed
-        dateLabel.shadowOffset = CGSize(width: 2, height: 2)
-        dateLabel.numberOfLines = 0
-        
-        dateLabel.adjustsFontSizeToFitWidth = true
-        dateLabel.frame = CGRect(x: 70, y: 450, width: 270, height: 150)
-        
-        view.addSubview(dateLabel)
-    }
-    
-//MARK: - DatePicker
-    
-    private func createDatePicker(_ datePicker: UIDatePicker) {
-        datePicker.datePickerMode = .countDownTimer
-        datePicker.preferredDatePickerStyle = .wheels
-        datePicker.setValue(UIColor.red, forKey: "textColor")
-        datePicker.sizeToFit()
-        datePicker.frame = CGRect(x: 100, y: 600, width: 200, height: 100)
-        
-        view.addSubview(datePicker)
-        datePicker.addTarget(self, action: #selector(datePickerChange(datePicker:)), for: .valueChanged)
-    }
-        
-//MARK: - ProgressBar
-    
-    private func createProgressBar(_ progressView: UIProgressView) {
-        progressView.progressViewStyle = .bar
-        progressView.progress = 1
-        progressView.progressTintColor = .red
-        progressView.trackTintColor = nil
-        
-        progressView.frame = CGRect(x: 50, y: 700, width: 300, height: 50)
-        view.addSubview(progressView)
-    }
-    
-//MARK: - Buttons
-    
-    private func createStartButton(_ button: UIButton) {
-        button.setTitle("Start", for: .normal)
-        button.setTitleColor(.red, for: .normal)
+    //MARK: - Buttons for amount
+
+    lazy var plusAmountButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("", for: .normal)
+        button.setTitleColor(.blue, for: .normal)
         button.alpha = 1
         
-        button.frame = CGRect(x: 20, y: 750, width: 100, height: 50)
-        button.layer.cornerRadius = 15
-        view.addSubview(button)
-        
-        button.addTarget(self, action: #selector(startTimer), for: .touchUpInside)
-    }
+        button.tag = 4
+        button.addTarget(self, action: #selector(changingAmount), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
-    private func createPauseButton(_ button: UIButton) {
-        button.setTitle("Pause", for: .normal)
-        button.setTitleColor(.red, for: .normal)
+    lazy var minusAmountButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("", for: .normal)
+        button.setTitleColor(.blue, for: .normal)
         button.alpha = 1
         
-        button.frame = CGRect(x: 140, y: 750, width: 100, height: 50)
-        button.layer.cornerRadius = 15
-        view.addSubview(button)
-        
-        button.addTarget(self, action: #selector(pauseTimer), for: .touchUpInside)
-    }
+        button.tag = 5
+        button.addTarget(self, action: #selector(changingAmount), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
-    private func createResetButton(_ button: UIButton) {
-        button.setTitle("Reset", for: .normal)
-        button.setTitleColor(.red, for: .normal)
+    //MARK: - Buttons for total amount
+
+    lazy var plusTotalButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("", for: .normal)
+        button.setTitleColor(.blue, for: .normal)
         button.alpha = 1
         
-        button.frame = CGRect(x: 260, y: 750, width: 100, height: 50)
-        button.layer.cornerRadius = 15
-        view.addSubview(button)
+        button.tag = 6
+        button.addTarget(self, action: #selector(changingTotal), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    lazy var minusTotalButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("", for: .normal)
+        button.setTitleColor(.blue, for: .normal)
+        button.alpha = 1
         
-        button.addTarget(self, action: #selector(resetTimer), for: .touchUpInside)
+        button.tag = 7
+        button.addTarget(self, action: #selector(changingTotal), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    //MARK: - Fire ImageView
+    
+    lazy var leftFireImageView: UIImageView = {
+       let imageView = UIImageView()
+       imageView.image = UIImage(named: "1")
+       imageView.translatesAutoresizingMaskIntoConstraints = false
+       return imageView
+    }()
+    
+    lazy var rightFireImageView: UIImageView = {
+       let imageView = UIImageView()
+        imageView.image = UIImage(named: "1")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+       return imageView
+    }()
+    
+//MARK: - Delegate TimerLogic
+    
+    var timerLogic: TimerLogicProtocolDelegate?
+    
+//MARK: - Status bar style
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+            .darkContent
+    }
+    
+//MARK: - Override functions
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        timerLogic = TimerLogic(delegate: self)
+                
+        addToSubview(views: [imageView, startButton, pauseButton, resetButton, progressView, datePicker, dateLabel, totalAmountLabel, plusAmountButton, minusAmountButton, plusTotalButton, minusTotalButton, leftFireImageView, rightFireImageView])
+        
+        addConstraints(constants: [imageViewConstraints, startButtonConstraints, pauseButtonConstraints, resetButtonConstraints, progressViewConstraints, datePickerConstraints, dateLabelConstraints, totalAmountLabelConstraints, plusAmountButtonConstraints, minusAmountButtonConstraints, plusTotalButtonConstraints, minusTotalButtonConstraints, leftFireImageViewConstraints,  rightFireImageViewConstraints])
+                        
+        enableButtons(start: true, pause: false, reset: false)
+        timerLogic?.elementIsHidden(datePicker: false, totalAmountLabel: true, plusAmountButton: true, minusAmountButton: true, plusTotalButton: true, minusTotalButton: true, leftFireImageView: true, rightFireImageView: true)
+        leftFireImageView.isHidden = true
+        rightFireImageView.isHidden = true
+    }
+    
+//MARK: - Animate ImageView
+    
+    func animateImageView(imageView: UIImageView, start: Bool) {
+        var images = [UIImage]()
+        for n in 1...26 {
+            images.append(UIImage(named: "\(n)")!)
+            }
+        imageView.animationImages = images
+        imageView.animationDuration = 0.9
+        if start {
+            imageView.startAnimating() } else { imageView.stopAnimating()
+                imageView.image = UIImage(named: "1")
+            }
+    }
+    
+//MARK: - Disable Buttons
+        
+        func enableButtons(start: Bool, pause: Bool, reset: Bool) {
+            startButton.isEnabled = start
+            pauseButton.isEnabled = pause
+            resetButton.isEnabled = reset
+        }
+    
+//MARK: - Add to view elements
+    
+    private func addToSubview(views: [UIView]) {
+        views.forEach { view in
+            self.view.addSubview(view)
+        }
+    }
+    
+    private func addConstraints(constants: [()->Void]) {
+        constants.forEach { constant in
+            constant()
+        }
+    }
+    
+//MARK: - Constraints
+  
+    private func imageViewConstraints() {
+        imageView.contentMode = .scaleAspectFill
+        imageView.frame = self.view.frame.standardized
+        imageView.translatesAutoresizingMaskIntoConstraints = true
+    }
+    
+    private func startButtonConstraints() {
+        NSLayoutConstraint.activate([
+            startButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
+            startButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            startButton.widthAnchor.constraint(equalToConstant: 75),
+            startButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    private func pauseButtonConstraints() {
+        NSLayoutConstraint.activate([
+            pauseButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pauseButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            pauseButton.widthAnchor.constraint(equalToConstant: 75),
+            pauseButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    private func resetButtonConstraints() {
+        NSLayoutConstraint.activate([
+            resetButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
+            resetButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            resetButton.widthAnchor.constraint(equalToConstant: 75),
+            resetButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    private func progressViewConstraints() {
+        NSLayoutConstraint.activate([
+            progressView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 45),
+            progressView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -45),
+            progressView.bottomAnchor.constraint(equalTo: pauseButton.topAnchor, constant: -20)
+        ])
+    }
+    
+    private func datePickerConstraints() {
+        NSLayoutConstraint.activate([
+            datePicker.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 1/2),
+            datePicker.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 1/5),
+            datePicker.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            datePicker.bottomAnchor.constraint(equalTo: progressView.topAnchor, constant: -10)
+        ])
+    }
+    
+    private func dateLabelConstraints() {
+        NSLayoutConstraint.activate([
+            dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            dateLabel.bottomAnchor.constraint(equalTo: datePicker.topAnchor, constant: -30)
+        ])
+    }
+    
+    private func totalAmountLabelConstraints() {
+        NSLayoutConstraint.activate([
+            totalAmountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            totalAmountLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 200)
+        ])
+    }
+    private func plusAmountButtonConstraints() {
+        NSLayoutConstraint.activate([
+            plusAmountButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
+            plusAmountButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 70)
+        ])
+    }
+    
+    private func minusAmountButtonConstraints() {
+        NSLayoutConstraint.activate([
+            minusAmountButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 120),
+            minusAmountButton.bottomAnchor.constraint(equalTo: dateLabel.topAnchor, constant: -80)
+        ])
+    }
+    
+    private func plusTotalButtonConstraints() {
+        NSLayoutConstraint.activate([
+            plusTotalButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
+            plusTotalButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -70)
+        ])
+    }
+    
+    private func minusTotalButtonConstraints() {
+        NSLayoutConstraint.activate([
+            minusTotalButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -110),
+            minusTotalButton.bottomAnchor.constraint(equalTo: dateLabel.topAnchor, constant: -80)
+        ])
+    }
+    
+    private func leftFireImageViewConstraints() {
+        NSLayoutConstraint.activate([
+            leftFireImageView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            leftFireImageView.topAnchor.constraint(equalTo: totalAmountLabel.bottomAnchor, constant: 15),
+            leftFireImageView.widthAnchor.constraint(equalToConstant: 150),
+            leftFireImageView.heightAnchor.constraint(equalToConstant: 200)
+        ])
+    }
+    
+    private func rightFireImageViewConstraints() {
+        NSLayoutConstraint.activate([
+            rightFireImageView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            rightFireImageView.topAnchor.constraint(equalTo: totalAmountLabel.bottomAnchor, constant: 10),
+            rightFireImageView.widthAnchor.constraint(equalToConstant: 150),
+            rightFireImageView.heightAnchor.constraint(equalToConstant: 200)
+        ])
     }
     
 //MARK: - Selectors
     
-    @objc func startTimer() {
+    @objc func startTimer(button: UIButton) {
         timerLogic?.createTimer()
-        datePicker.isHidden = true
-        totalAmount.isHidden = true
         
         enableButtons(start: false, pause: true, reset: true)
+        timerLogic?.elementIsHidden(datePicker: true, totalAmountLabel: true, plusAmountButton: true, minusAmountButton: true, plusTotalButton: true, minusTotalButton: true, leftFireImageView: false, rightFireImageView: false)
         
         MusicHelper.sharedHelper.audioPlayer?.stop()
         MusicHelper.sharedHelper.playSystemMusic(nameOfTrack: "diablo_3_rift_sound")
+        
+        animateImageView(imageView: leftFireImageView, start: true)
+        animateImageView(imageView: rightFireImageView, start: true)
     }
-    @objc func pauseTimer() {
+    
+    @objc func pauseTimer(button: UIButton) {
         timerLogic?.timer.invalidate()
         enableButtons(start: true, pause: false, reset: true)
         
         MusicHelper.sharedHelper.playSystemMusic(nameOfTrack: "diablo_3_rift_sound")
+        leftFireImageView.stopAnimating()
+        rightFireImageView.stopAnimating()
     }
-    @objc func resetTimer() {
+    
+    @objc func resetTimer(button: UIButton) {
         timerLogic?.timer.invalidate()
         dateLabel.text = "You Died"
         progressView.progress = 1
@@ -183,8 +399,7 @@ final class ViewController: UIViewController {
         
         enableButtons(start: true, pause: true, reset: false)
         
-        totalAmount.isHidden = true
-        datePicker.isHidden = false
+        timerLogic?.elementIsHidden(datePicker: false, totalAmountLabel: true, plusAmountButton: true, minusAmountButton: true, plusTotalButton: true, minusTotalButton: true, leftFireImageView: true, rightFireImageView: true)
         
         MusicHelper.sharedHelper.playSystemMusic(nameOfTrack: "diablo_3_rift_sound")
     }
@@ -196,13 +411,29 @@ final class ViewController: UIViewController {
         }
     }
     
-//MARK: - Disable Buttons
-    
-    func enableButtons(start: Bool, pause: Bool, reset: Bool) {
-        startButton.isEnabled = start
-        pauseButton.isEnabled = pause
-        resetButton.isEnabled = reset
+    @objc func changingAmount(button: UIButton) {
+        if button.tag == 4 {
+            timerLogic?.timeAmountSegments(UpDown: true)
+            MusicHelper.sharedHelper.playSystemMusic(nameOfTrack: "diablo_3_rift_sound")
+        }
+        if button.tag == 5 {
+            timerLogic?.timeAmountSegments(UpDown: false)
+            MusicHelper.sharedHelper.playSystemMusic(nameOfTrack: "diablo_3_rift_sound")
+        }
     }
+    
+    @objc func changingTotal(button: UIButton) {
+        if button.tag == 6 {
+            timerLogic?.timeTotalSegments(UpDown: true)
+            MusicHelper.sharedHelper.playSystemMusic(nameOfTrack: "diablo_3_rift_sound")
+        }
+        if button.tag == 7 {
+            timerLogic?.timeTotalSegments(UpDown: false)
+            MusicHelper.sharedHelper.playSystemMusic(nameOfTrack: "diablo_3_rift_sound")
+        }
+    }
+    
+    
 }
 
 //MARK: - Extensions

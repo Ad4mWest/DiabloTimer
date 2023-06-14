@@ -11,9 +11,9 @@ final class UserDefaultsValues {
         case total
     }
     
-    var totalTimeSegments: Int {
+    var totalTimeSegments: UInt {
         get {
-            return userDefaults.integer(forKey: Keys.total.rawValue)
+            return UInt(userDefaults.integer(forKey: Keys.total.rawValue))
         }
         set {
             userDefaults.set(newValue, forKey: Keys.total.rawValue)

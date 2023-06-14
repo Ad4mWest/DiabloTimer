@@ -25,7 +25,7 @@
 		13903B7D2A323D2000F3946E /* diablo_3_rift_sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = diablo_3_rift_sound.mp3; sourceTree = "<group>"; };
 		13AB7B032A2E61B200C14654 /* DiabloTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DiabloTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13AB7B062A2E61B200C14654 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		13AB7B0A2A2E61B200C14654 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		13AB7B0A2A2E61B200C14654 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = "/Users/adamwest/Desktop/IOS/Projects /DiabloTimer/DiabloTimer/Presenter/ViewController.swift"; sourceTree = "<absolute>"; };
 		13AB7B0F2A2E61B400C14654 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		13AB7B122A2E61B400C14654 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		13AB7B142A2E61B400C14654 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
